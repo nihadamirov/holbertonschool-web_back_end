@@ -1,1 +1,2 @@
+// script that list all DB in mangoDB
 show dbs
