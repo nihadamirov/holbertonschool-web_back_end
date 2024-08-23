@@ -2,25 +2,29 @@
 """Log stats"""
 from pymongo import MongoClient
 
+# Connect to MongoDB and select the nginx collection from the logs database
+client = MongoClient('mongodb://127.0.0.1:27017')
+db = client.logs
+nginx_collection = db.nginx
 
-def helper(a: dict) -> int:
-    """return log"""
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    logs = client.logs.nginx
-    return logs.count_documents(a)
+def log_stats():
+    """ Function to print statistics about Nginx logs stored in MongoDB """
+    
+    # Count the total number of documents in the collection
+    total_logs = nginx_collection.count_documents({})
+    print(f"{total_logs} logs")
 
-
-def main():
-    """ provides some stats about Nginx logs stored in MongoDB """
-    print(f"{helper({})} logs")
+    # Methods statistics
     print("Methods:")
-    print(f"\tmethod GET: {helper({'method': 'GET'})}")
-    print(f"\tmethod POST: {helper({'method': 'POST'})}")
-    print(f"\tmethod PUT: {helper({'method': 'PUT'})}")
-    print(f"\tmethod PATCH: {helper({'method': 'PATCH'})}")
-    print(f"\tmethod DELETE: {helper({'method': 'DELETE'})}")
-    print(f"{helper({'method': 'GET', 'path': '/status'})} status check")
-
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    for method in methods:
+        # Count the number of documents for each HTTP method
+        count = nginx_collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {count}")
+    
+    # Count the number of documents where method is GET and path is /status
+    status_check = nginx_collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status_check} status check")
 
 if __name__ == "__main__":
-    main()
+    log_stats()
