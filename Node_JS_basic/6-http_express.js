@@ -1,11 +1,18 @@
 const express = require('express');
 
-const port = 1245;
 const app = express();
-module.exports = app;
+const port = 1245;
 
 app.get('/', (req, res) => {
   res.send('Hello Holberton School!');
 });
 
-app.listen(port);
+app.use((req, res) => {
+  res.status(404).send('Not Found');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+module.exports = app;
